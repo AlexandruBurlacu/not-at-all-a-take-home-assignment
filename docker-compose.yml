@@ -7,5 +7,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "${PORT:-8000}:8000"
+    restart: unless-stopped
     environment:
       MAX_CONURRENT_TASKS: ${PORT:-8}
