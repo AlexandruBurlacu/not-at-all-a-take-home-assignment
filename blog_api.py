@@ -1,24 +1,26 @@
 from fastapi import FastAPI, status
-from pydantic import BaseModel
+
+from models import BlogpostRequest, BlogpostResponse
+
+from ml_service_client import FoulLanguageDetector
+from storage import insert_blogpost
+
+from mocked_requests import requests
 
 import uuid
 
 app = FastAPI()
 
-class Blogpost:
-    class Request(BaseModel):
-        title: str
-        paragraphs: list[str]
-    
-    class Response(BaseModel):
-        blogpost_slug: str
+detector = FoulLanguageDetector(requests)
 
 
 def prepare_slug_prefix(title: str):
     return title.lower().rstrip(" ").lstrip(" ").replace(" ", "-")
 
 
-@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=Blogpost.Response)
-def post_blogpost(blogpost: Blogpost.Request) -> Blogpost.Response:
+@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=BlogpostResponse)
+def post_blogpost(blogpost: BlogpostRequest) -> BlogpostResponse:
     slug = prepare_slug_prefix(blogpost.title) + f"-{uuid.uuid4()}"
-    return Blogpost.Response(blogpost_slug=slug)
+    blogpost_id = insert_blogpost(blogpost.title, slug, blogpost.paragraphs)
+    detector.detect_foul_language(blogpost_id)
+    return BlogpostResponse(blogpost_slug=slug)
