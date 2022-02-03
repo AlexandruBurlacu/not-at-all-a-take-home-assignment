@@ -1,11 +1,11 @@
-from charset_normalizer import logging
-from storage import fetch_blogpost, update_blogpost
-from mocked_requests import AbstractRequester
+from .storage import fetch_blogpost, update_blogpost
+from .mocked_requests import AbstractRequester
 
 from concurrent.futures import ThreadPoolExecutor
 import time
 import random
 import os
+import logging
 
 
 MAX_CONURRENT_TASKS = int(os.environ.get("MAX_CONURRENT_TASKS", "8"))

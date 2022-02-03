@@ -1,4 +1,4 @@
-from models import Blogpost
+from .models import Blogpost
 
 import uuid
 

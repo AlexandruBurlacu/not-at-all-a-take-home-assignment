@@ -1,11 +1,11 @@
 from fastapi import FastAPI, status
 
-from models import BlogpostRequest, BlogpostResponse
+from src.models import BlogpostRequest, BlogpostResponse
 
-from ml_service_client import FoulLanguageDetector
-from storage import insert_blogpost
+from src.ml_service_client import FoulLanguageDetector
+from src.storage import insert_blogpost
 
-from mocked_requests import requests
+from src.mocked_requests import requests
 
 import uuid
 

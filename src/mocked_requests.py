@@ -1,5 +1,5 @@
 import random
-from typing import Protocol, runtime_checkable
+from typing import Protocol
 
 
 PYJSON_VALUE_TYPES = str | int | dict | list | bool | float
