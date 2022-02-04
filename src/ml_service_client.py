@@ -1,3 +1,4 @@
+from typing import Iterable
 from .storage import fetch_blogpost, update_blogpost
 from .mocked_requests import AbstractRequester
 
@@ -27,9 +28,9 @@ class FoulLanguageDetector:
     def detect_foul_language_task(self, blogpost_id: str):
         blogpost = fetch_blogpost(blogpost_id)
         
-        futures = executor.map(self.predict_foul_language, blogpost.paragraphs)
+        paragraph_predictions: Iterable[bool | None] = executor.map(self.predict_foul_language, blogpost.paragraphs)
 
-        if any(future.result for future in futures):
+        if any(paragraph_predictions):
             update_blogpost(blogpost_id, has_foul_language=True)
         else:
             update_blogpost(blogpost_id, has_foul_language=False)
@@ -54,6 +55,6 @@ class FoulLanguageDetector:
                     "Content-Type": "application/json",
                     "Authorization": "Bearer some_dummy_token"
                 }, json={"fragment": blogpost_paragraph})
-        
-        return response.json().get("hasFoulLanguage")
+
+        return response.json().get("hasFoulLanguage") # type: ignore
 
