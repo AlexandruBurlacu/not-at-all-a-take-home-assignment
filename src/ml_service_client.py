@@ -11,10 +11,10 @@ import logging
 MAX_CONURRENT_TASKS = int(os.environ.get("MAX_CONURRENT_TASKS", "8"))
 executor = ThreadPoolExecutor(max_workers=MAX_CONURRENT_TASKS)
 
+_sleep = time.sleep
 
 def backoff_timeout(retry: int):
-    backoff_seconds = 0.3 * 2 ** retry + 0.1 * random.randint(5, 15)
-    time.sleep(backoff_seconds)
+    return 0.3 * 2 ** retry + 0.1 * random.randint(5, 15)
 
 
 class FoulLanguageDetector:
@@ -22,19 +22,19 @@ class FoulLanguageDetector:
         self.requester = requester
 
     def detect_foul_language(self, blogpost_id: str) -> None:
-        executor.submit(self._detect_foul_language_task, blogpost_id)
+        executor.submit(self.detect_foul_language_task, blogpost_id)
 
-    def _detect_foul_language_task(self, blogpost_id: str):
+    def detect_foul_language_task(self, blogpost_id: str):
         blogpost = fetch_blogpost(blogpost_id)
         
-        futures = executor.map(self._predict_foul_language, blogpost.paragraphs)
+        futures = executor.map(self.predict_foul_language, blogpost.paragraphs)
 
         if any(future.result for future in futures):
             update_blogpost(blogpost_id, has_foul_language=True)
         else:
             update_blogpost(blogpost_id, has_foul_language=False)
 
-    def _predict_foul_language(self, blogpost_paragraph: str):
+    def predict_foul_language(self, blogpost_paragraph: str) -> bool | None:
 
         response = self.requester.post("https://internal-api.example.com/v0/sentences", headers={
             "Accept": "application/json",
@@ -46,7 +46,8 @@ class FoulLanguageDetector:
             if response.status_code >= 500:
                 logging.warning(f"Received a 5xx status code, retrying [{retry+1}/5]")
 
-                backoff_timeout(retry)
+                backoff_seconds = backoff_timeout(retry)
+                _sleep(backoff_seconds)
 
                 response = self.requester.post("https://internal-api.example.com/v0/sentences", headers={
                     "Accept": "application/json",
