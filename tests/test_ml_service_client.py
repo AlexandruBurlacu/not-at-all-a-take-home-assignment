@@ -13,6 +13,6 @@ def test_detect_foul_language_ok(_sleep):
 
 
 def test_backoff_timeout_ok():
-    assert 0.6 + 0.5 < backoff_timeout(1) < 0.6 + 1.5
-    assert 0.3 + 0.5 < backoff_timeout(0) < 0.3 + 1.5
-    assert 9.6 + 0.5 < backoff_timeout(5) < 9.6 + 1.5
+    assert 0.6 + 0.5 - 1e5 < backoff_timeout(1) < 0.6 + 1.5 + 1e5
+    assert 0.3 + 0.5 - 1e5 < backoff_timeout(0) < 0.3 + 1.5 + 1e5
+    assert 9.6 + 0.5 - 1e5 < backoff_timeout(5) < 9.6 + 1.5 + 1e5
