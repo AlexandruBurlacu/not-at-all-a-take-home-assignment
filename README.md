@@ -35,5 +35,7 @@ I couldn't keep myself from showing off at least a bit. That's why this solution
 - More tests.
 - Better (read cleaner) code organization, although I tried.
 - A persistent connection to the ML API, so as to not waste time on TCP and TLS handshakes.
-- Obviously a proper database, and an easy way to vertically scale the application. I forwarded the container port outside, so it's non-trivial now to `docker-compose up --scale=K blog`.
+- Obviously a proper database, the actual content-moderation system, and an easy way to vertically scale the application. I forwarded the container port outside, so it's non-trivial now to `docker-compose up --scale=K blog`.
+
+There's more, but you got the idea.
 
